@@ -5,7 +5,6 @@
 #include <unistd.h> 
 #include <string.h>
 #include "parser.h" 
-#define PORT 9999 
    
 
 //     int BytesSent, nlen;
@@ -17,6 +16,13 @@
 
 int main(int argc, char const *argv[]) 
 { 
+    unsigned int port;
+    if(argc != 2){
+        fprintf(stderr,"No Port defined! Exiting...\n");
+        return -1;
+    }
+
+    port = atoi(argv[1]);
     readkeys();
     int sock = 0, BytesSent; 
     struct sockaddr_in serv_addr; 
@@ -29,7 +35,7 @@ int main(int argc, char const *argv[])
     } 
    
     serv_addr.sin_family = AF_INET; 
-    serv_addr.sin_port = htons(PORT); 
+    serv_addr.sin_port = htons(port); 
        
     // Convert IPv4 and IPv6 addresses from text to binary form 
     if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)  
@@ -83,9 +89,9 @@ while(true){
             for (int i=0;i <=(frame[2]+2) ;i++){printf("%02X ",frame[i]);}
             printf("\n");
 
-            genemm(sendbuf);
-            memcpy(&sendbuf[43],&frame[0],(frame[2]+3));
-            sendbuf[42] = frame[2]+3;
+            genframe(sendbuf);
+            copyemm(sendbuf,frame);
+
             for(int i =0;i < 0xcf;i++){printf("%02X ",sendbuf[i]&0xff);}
             printf("\n");
             BytesSent = send(sock, sendbuf, ((sendbuf[4]+5) &0xff ), 0);
@@ -107,7 +113,7 @@ while(true){
     }
 
 
-	genemm(sendbuf);
+	genframe(sendbuf);
 	BytesSent = send(sock, sendbuf, ((sendbuf[4]+5) &0xff ), 0);
 
 	if(BytesSent == SO_ERROR)

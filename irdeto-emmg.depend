@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1576745806 source:r:\irdeto-emmg\irdeto_core.cpp
+1576846596 source:r:\irdeto-emmg\irdeto_core.cpp
 	"irdeto_core.h"
 
 1576745845 r:\irdeto-emmg\irdeto_core.h
@@ -8,15 +8,15 @@
 	<fstream>
 	<cstring>
 
-1573653326 source:r:\irdeto-emmg\main.cpp
+1576846596 source:r:\irdeto-emmg\main.cpp
 	<winsock2.h>
 	<stdio.h>
 	<windows.h>
 	"parser.h"
 
-1576750385 r:\irdeto-emmg\parser.h
+1576834477 r:\irdeto-emmg\parser.h
 	"irdeto_core.h"
 
-1576750217 source:r:\irdeto-emmg\parser.cpp
+1576835891 source:r:\irdeto-emmg\parser.cpp
 	"parser.h"
 

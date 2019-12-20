@@ -528,6 +528,8 @@ case(0x1a):
     break;
 }
 
+buffer[0] = 0x82;
+buffer[1] = 0x70;
 //type 0
 switch(type){
     case(0x00):
@@ -539,7 +541,7 @@ switch(type){
         buffer[9] = 0x68;
         buffer[10] = 0x0d;
         buffer[11] = provider;
-        buffer[12] = keyident;
+        buffer[12] = 0x00;
         memcpy(&buffer[13],&pmk[0],8);
         memcpy(&buffer[21],&providerid[0],3);
         sign(signature,buffer,hmk,2);

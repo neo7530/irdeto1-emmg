@@ -8,18 +8,25 @@ int timer;
 
 int main(int argc, char **argv)
 {
-     readkeys();
+
      WSADATA              wsaData;
      SOCKET               SendingSocket;
      // Server/receiver address
      SOCKADDR_IN          ServerAddr, ThisSenderInfo;
      // Server/receiver port to connect to
-     unsigned int         Port = 9999;
      int  RetCode;
      // Be careful with the array bound, provide some checking mechani
      char sendbuf[1024];
      char buffer[1024];
      int BytesSent, nlen;
+     unsigned int port;
+     if(argc != 2){
+        fprintf(stderr,"No Port defined! Exiting...\n");
+        return -1;
+     }
+
+    readkeys();
+    port = atoi(argv[1]);
 
      // Initialize Winsock version 2.2
      WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -46,7 +53,7 @@ int main(int argc, char **argv)
      // IPv4
      ServerAddr.sin_family = AF_INET;
      // Port no.
-     ServerAddr.sin_port = htons(Port);
+     ServerAddr.sin_port = htons(port);
      // The IP address
      ServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
@@ -113,10 +120,10 @@ int main(int argc, char **argv)
             printf("EMM to SEND: \n");
             for (int i=0;i <=(frame[2]+2) ;i++){printf("%02X ",frame[i]);}
             printf("\n");
+            genframe(sendbuf);
 
-            genemm(sendbuf);
-            memcpy(&sendbuf[43],&frame[0],(frame[2]+3));
-            sendbuf[42] = frame[2]+3;
+            copyemm(sendbuf,frame);
+
             for(int i =0;i < 0xcf;i++){printf("%02X ",sendbuf[i]&0xff);}
             printf("\n");
             BytesSent = send(SendingSocket, sendbuf, ((sendbuf[4]+5) &0xff ), 0);
@@ -142,20 +149,20 @@ int main(int argc, char **argv)
     else printf("ERROR: database.bin not found! \n");
     timer = (time(0)+120);
     }
-     genemm(sendbuf);
+     genframe(sendbuf);
      BytesSent = send(SendingSocket, sendbuf, ((sendbuf[4]+5) &0xff ), 0);
 
-     if(BytesSent == SOCKET_ERROR)
-          printf("Client: send() error %d.\n", WSAGetLastError());
+     if(BytesSent == SOCKET_ERROR){
+        printf("Client: send() error %d.\n", WSAGetLastError());
+        return 0;
+
+     }
      else
      {
-          //printf("Client: send() is OK - bytes sent: %d\n", BytesSent);
           memset(&ThisSenderInfo, 0, sizeof(ThisSenderInfo));
           nlen = sizeof(ThisSenderInfo);
 
           getsockname(SendingSocket, (SOCKADDR *)&ThisSenderInfo, &nlen);
-          //printf("Client: Sender IP(s) used: %s\n", inet_ntoa(ThisSenderInfo.sin_addr));
-          //printf("Client: Sender port used: %d\n", htons(ThisSenderInfo.sin_port));
      }
 
 Sleep(50);
